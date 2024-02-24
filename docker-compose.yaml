@@ -100,6 +100,8 @@ services:
       retries: 5
       start_period: 5s
     restart: always
+    depends_on:
+      - statsd-exporter
     networks:
       - dibimbing
 
@@ -115,6 +117,8 @@ services:
       retries: 50
       start_period: 30s
     restart: always
+    depends_on:
+      - statsd-exporter
     networks:
       - dibimbing
 
@@ -305,6 +309,28 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      - dibimbing
+  
+  statsd-exporter:
+    image: prom/statsd-exporter:latest
+    container_name: airflow-statsd-exporter
+    command: "--statsd.listen-udp=:8125 --web.listen-address=:9102"
+    ports:
+      - 9123:9102
+      - 8125:8125/udp
+    networks:
+      - dibimbing
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: airflow-prometheus
+    user: "0"
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yaml:/prometheus.yaml
+    command: "--config.file=/prometheus.yaml"
     networks:
       - dibimbing
 

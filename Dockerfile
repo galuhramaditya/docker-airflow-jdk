@@ -9,6 +9,6 @@ RUN apt-get update \
 USER airflow
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 RUN pip install --no-cache-dir \
-  "apache-airflow==${AIRFLOW_VERSION}" \
+  "apache-airflow[statsd]==${AIRFLOW_VERSION}" \
   apache-airflow-providers-apache-spark \
   apache-airflow-providers-apache-hive
